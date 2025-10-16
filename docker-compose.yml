@@ -1,4 +1,4 @@
-﻿version: '3.8'
+version: '3.8'
 
 services:
   postgres:
@@ -24,7 +24,7 @@ services:
       context: ./api
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "0.0.0.0:3000:3000"
     environment:
       DATABASE_URL: postgresql://cham_user:cham_pass@postgres:5432/cham_db
       REDIS_URL: redis://redis:6379
@@ -56,9 +56,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
+      - "0.0.0.0:5173:5173"
     environment:
-      VITE_API_URL: http://localhost:3000
+      VITE_API_URL: http://192.168.2.41:3000
     volumes:
       - ./frontend:/app
       - /app/node_modules

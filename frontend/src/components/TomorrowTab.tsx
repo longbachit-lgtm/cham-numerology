@@ -5,7 +5,7 @@ export default function TomorrowTab() {
   const { tomorrowFeed } = useFeedStore();
 
   if (!tomorrowFeed) {
-    return <div className="text-center py-12 text-gray-500">Äang táº£i...</div>;
+    return <div className="text-center py-12 text-gray-500">Đang tải...</div>;
   }
 
   const { energyCard } = tomorrowFeed;

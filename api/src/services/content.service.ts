@@ -18,21 +18,21 @@ export async function getContentTemplates(
   lang: string = 'vi'
 ): Promise<{ [key: string]: string }> {
 
-  console.log({ number, scope, lang })
+
   const result = await pool.query(
     `SELECT key, body FROM content_templates 
      WHERE number = $1  AND lang = $2`,
     [number, lang]
   );
 
-  console.log({ result })
+
 
   const content: { [key: string]: string } = {};
   result.rows.forEach(row => {
     content[row.key] = row.body;
   });
 
-  console.log("Content Template ==>", { content })
+
   return content;
 }
 

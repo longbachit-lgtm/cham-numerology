@@ -43,9 +43,9 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-6">
           <h1 className="text-3xl font-extrabold tracking-wide text-[#5a4639] mb-1">
-            CHAM
+            CHẠM
           </h1>
-          <p className="text-sm text-gray-600">Numerology &amp; Daily Guidance</p>
+          <p className="text-sm text-gray-600">Thần số học &amp; Gợi ý hằng ngày</p>
         </div>
 
         {/* Form */}
@@ -59,7 +59,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="h-11 w-full rounded-xl border-2 border-[#e9c98a] bg-white px-4 text-[15px] placeholder:text-[#b9a38f] outline-none focus:border-[#c79a4b] focus:ring-4 focus:ring-[rgba(199,154,75,.18)]"
-              placeholder="email@example.com"
+              placeholder="email"
               required
               autoComplete="email"
             />
@@ -67,7 +67,7 @@ export default function LoginPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
+              Mật khẩu
             </label>
             <input
               type="password"
@@ -80,18 +80,18 @@ export default function LoginPage() {
             />
           </div>
 
-          {error && (
-            <div className="text-red-700 text-sm bg-red-50 border border-red-200 p-3 rounded-xl">
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="text-red-700 text-sm bg-red-50 border border-red-200 p-3 rounded-xl">
+            {error}
+          </div>
+        )}
 
           <button
             type="submit"
             disabled={loading}
             className="w-full h-11 rounded-xl bg-[#c79a4b] text-white font-semibold shadow-md hover:brightness-105 active:translate-y-px transition disabled:opacity-60"
           >
-            {loading ? "Processing..." : isSignup ? "Sign up" : "Sign in"}
+            {loading ? "Đang xử lý..." : isSignup ? "Đăng ký" : "Đăng nhập"}
           </button>
         </form>
 
@@ -101,7 +101,7 @@ export default function LoginPage() {
             onClick={() => setIsSignup((v) => !v)}
             className="text-[#2b7fff] hover:underline text-sm"
           >
-            {isSignup ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
+            {isSignup ? "Đã có tài khoản? Đăng nhập" : "Chưa có tài khoản? Đăng ký"}
           </button>
         </div>
 
@@ -111,7 +111,7 @@ export default function LoginPage() {
             onClick={handleSkip}
             className="w-full h-11 rounded-xl border border-[#d9c7b5] bg-white text-[#6e645b] hover:bg-[#fff1e2] transition"
           >
-            Skip sign in
+            Bỏ qua đăng nhập
           </button>
         </div>
       </div>
