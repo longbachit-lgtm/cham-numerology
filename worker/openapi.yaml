@@ -1,0 +1,347 @@
+﻿openapi: 3.0.3
+info:
+  title: CHáº M API
+  version: 1.0.0
+  description: API cho á»©ng dá»¥ng tháº§n sá»‘ há»c CHáº M
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+
+paths:
+  /auth/signup:
+    post:
+      summary: ÄÄƒng kÃ½ tÃ i khoáº£n má»›i
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+      responses:
+        '200':
+          description: ÄÄƒng kÃ½ thÃ nh cÃ´ng
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  token:
+                    type: string
+
+  /auth/login:
+    post:
+      summary: ÄÄƒng nháº­p
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: ÄÄƒng nháº­p thÃ nh cÃ´ng
+
+  /profile:
+    get:
+      summary: Láº¥y thÃ´ng tin profile
+      tags: [Profile]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ThÃ nh cÃ´ng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+    
+    put:
+      summary: Cáº­p nháº­t profile
+      tags: [Profile]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdate'
+      responses:
+        '200':
+          description: Cáº­p nháº­t thÃ nh cÃ´ng
+
+  /profile/compute-numerology:
+    post:
+      summary: TÃ­nh toÃ¡n cÃ¡c sá»‘ tháº§n sá»‘ há»c
+      tags: [Profile]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: TÃ­nh toÃ¡n thÃ nh cÃ´ng
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NumerologyCore'
+
+  /feed/today:
+    get:
+      summary: Láº¥y feed hÃ´m nay
+      tags: [Feed]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: lang
+          in: query
+          schema:
+            type: string
+            default: vi
+            enum: [vi, en]
+      responses:
+        '200':
+          description: ThÃ nh cÃ´ng
+
+  /feed/next:
+    get:
+      summary: Láº¥y feed ngÃ y mai
+      tags: [Feed]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: lang
+          in: query
+          schema:
+            type: string
+            default: vi
+      responses:
+        '200':
+          description: ThÃ nh cÃ´ng
+
+  /feed/period:
+    get:
+      summary: Láº¥y feed theo ká»³ (tuáº§n/thÃ¡ng/nÄƒm)
+      tags: [Feed]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: scope
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [week, month, year]
+        - name: lang
+          in: query
+          schema:
+            type: string
+            default: vi
+      responses:
+        '200':
+          description: ThÃ nh cÃ´ng
+
+  /todos:
+    get:
+      summary: Láº¥y danh sÃ¡ch todos
+      tags: [Todos]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ThÃ nh cÃ´ng
+    
+    post:
+      summary: Táº¡o todo má»›i
+      tags: [Todos]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+                dueAt:
+                  type: string
+                  format: date-time
+                sourceTag:
+                  type: string
+      responses:
+        '201':
+          description: Táº¡o thÃ nh cÃ´ng
+
+  /todos/{id}:
+    patch:
+      summary: Cáº­p nháº­t todo
+      tags: [Todos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                dueAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+                doneAt:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        '200':
+          description: Cáº­p nháº­t thÃ nh cÃ´ng
+    
+    delete:
+      summary: XÃ³a todo
+      tags: [Todos]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: XÃ³a thÃ nh cÃ´ng
+
+  /todos/reminders:
+    post:
+      summary: Táº¡o reminder cho todo
+      tags: [Todos]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [todoId, remindAt]
+              properties:
+                todoId:
+                  type: string
+                  format: uuid
+                remindAt:
+                  type: string
+                  format: date-time
+                channel:
+                  type: string
+                  enum: [push, email]
+                  default: push
+      responses:
+        '201':
+          description: Táº¡o thÃ nh cÃ´ng
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+
+    Profile:
+      type: object
+      properties:
+        fullName:
+          type: string
+        dob:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [male, female, other]
+        jobField:
+          type: string
+        jobRole:
+          type: string
+        tz:
+          type: string
+
+    ProfileUpdate:
+      type: object
+      required: [fullName, dob]
+      properties:
+        fullName:
+          type: string
+        dob:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum: [male, female, other]
+        jobField:
+          type: string
+        jobRole:
+          type: string
+        tz:
+          type: string
+          default: Asia/Bangkok
+
+    NumerologyCore:
+      type: object
+      properties:
+        lifePath:
+          type: string
+        destiny:
+          type: string
+        soul:
+          type: string
+        personality:
+          type: string
+        birthday:
+          type: string
+        maturity:
+          type: string
+        attitude:
+          type: string
+        chartBirth:
+          type: object
+        chartName:
+          type: object
