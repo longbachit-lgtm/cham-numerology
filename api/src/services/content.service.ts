@@ -17,17 +17,22 @@ export async function getContentTemplates(
   scope: string = 'day',
   lang: string = 'vi'
 ): Promise<{ [key: string]: string }> {
+
+  console.log({ number, scope, lang })
   const result = await pool.query(
     `SELECT key, body FROM content_templates 
-     WHERE number = $1 AND scope = $2 AND lang = $3`,
-    [number, scope, lang]
+     WHERE number = $1  AND lang = $2`,
+    [number, lang]
   );
-  
+
+  console.log({ result })
+
   const content: { [key: string]: string } = {};
   result.rows.forEach(row => {
     content[row.key] = row.body;
   });
-  
+
+  console.log("Content Template ==>", { content })
   return content;
 }
 
@@ -48,18 +53,18 @@ export async function getNumberContent(
   context: any = {}
 ): Promise<any> {
   let content = await getContentTemplates(number, scope, lang);
-  
+
   // Fallback to English if Vietnamese content is missing
   if (Object.keys(content).length === 0 && lang !== 'en') {
     content = await getContentTemplates(number, scope, 'en');
   }
-  
+
   // Render templates with context
   const rendered: any = {};
   for (const [key, template] of Object.entries(content)) {
     rendered[key] = renderTemplate(template, context);
   }
-  
+
   return rendered;
 }
 
@@ -73,23 +78,23 @@ export async function buildEnergyCard(
   userContext: any = {}
 ): Promise<any> {
   const content = await getNumberContent(personalDay, scope, lang, userContext);
-  
+
   return {
     number: personalDay,
-    title: content.title || `NÄƒng lÆ°á»£ng ${personalDay}`,
-    keywords: content.keywords || '',
-    challenges: content.challenges || '',
-    opportunities: content.opportunities || '',
+    title: content.title || `Năng lượng con số ${personalDay}`,
+    keywords: content.keywords || '1',
+    challenges: content.challenges || '1',
+    opportunities: content.opportunities || '1',
     quickTip: content.quick_tip || '',
-    mistakesToAvoid: content.mistakes_to_avoid || '',
+    mistakesToAvoid: content.mistakes_to_avoid || '1',
     actions: {
-      morning: content.actions_morning || '',
-      noon: content.actions_noon || '',
-      afternoon: content.actions_afternoon || '',
-      night: content.actions_night || '',
+      morning: content.actions_morning || '1',
+      noon: content.actions_noon || '1',
+      afternoon: content.actions_afternoon || '1',
+      night: content.actions_night || '1',
     },
-    affirmation: content.affirmation || '',
-    quote: content.quote || '',
+    affirmation: content.affirmation || '1',
+    quote: content.quote || '1',
   };
 }
 
