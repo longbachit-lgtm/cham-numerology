@@ -35,3 +35,4 @@ console.log('Query rowCount:', result.rowCount);
 2. **Scope/lang không khớp**: Phải đúng "day", "vi" hoặc "en"
 3. **Database chưa migrate**: Chạy `npm run migrate` trước
 
+

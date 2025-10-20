@@ -1,14 +1,15 @@
 ﻿import React, { useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store";
 import { signup, login } from "../services/api";
 
-export default function LoginPage() {
+export default function LoginCardLikeMock() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignup, setIsSignup] = useState(false);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
@@ -21,7 +22,7 @@ export default function LoginPage() {
       const res = isSignup
         ? await signup({ email, password })
         : await login({ email, password });
-      const { token, user } = res.data; // giả định API trả về như vậy
+      const { token, user } = res.data; // tuỳ API của bạn
       setAuth(token, user);
       navigate("/onboarding/name");
     } catch (err: unknown) {
@@ -35,83 +36,86 @@ export default function LoginPage() {
     }
   };
 
-  const handleSkip = () => navigate("/onboarding/name");
+  const handleSkip = () => {
+    // Bỏ qua đăng nhập -> vào luồng onboarding
+    navigate("/onboarding/name");
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f6e7d3] to-[#faefde] p-4">
-      <div className="w-full max-w-md rounded-2xl border border-[#e9dccb] bg-white/90 shadow-xl p-6">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-extrabold tracking-wide text-[#5a4639] mb-1">
-            CHẠM
-          </h1>
-          <p className="text-sm text-gray-600">Thần số học &amp; Gợi ý hằng ngày</p>
-        </div>
+    <div
+      className="min-h-screen w-full flex items-center justify-center p-4"
+      style={{
+        backgroundImage:
+          "radial-gradient(#f3d9a6 1px, transparent 1px), radial-gradient(#f3d9a6 1px, transparent 1px)",
+        backgroundPosition: "0 0, 12px 12px",
+        backgroundSize: "24px 24px",
+        backgroundColor: "#fff8ec",
+      }}
+    >
+      <div className="w-full max-w-md rounded-[18px] border border-[#c8b8a2] bg-[#fff4e6]/95 shadow-[0_10px_30px_rgba(60,40,20,.08)] p-6">
+        <h2 className="text-center text-[28px] font-extrabold tracking-wide text-[#c79a4b] mb-6">
+          {isSignup ? "ĐĂNG KÝ" : "ĐĂNG NHẬP"}
+        </h2>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-11 w-full rounded-xl border-2 border-[#e9c98a] bg-white px-4 text-[15px] placeholder:text-[#b9a38f] outline-none focus:border-[#c79a4b] focus:ring-4 focus:ring-[rgba(199,154,75,.18)]"
-              placeholder="email"
+              placeholder="Email"
+              className="h-[54px] w-full rounded-[16px] border-2 border-[#d7a760] bg-white/95 px-4 text-[16px] text-[#6b5a4b] placeholder:text-[#d8c7b6] outline-none focus:border-[#c79a4b] focus:ring-4 focus:ring-[rgba(199,154,75,.18)]"
               required
               autoComplete="email"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Mật khẩu
-            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="h-11 w-full rounded-xl border-2 border-[#e9c98a] bg-white px-4 text-[15px] placeholder:text-[#b9a38f] outline-none focus:border-[#c79a4b] focus:ring-4 focus:ring-[rgba(199,154,75,.18)]"
-              placeholder="••••••••"
+              placeholder="Mật khẩu"
+              className="h-[54px] w-full rounded-[16px] border-2 border-[#d7a760] bg-white/95 px-4 text-[16px] text-[#6b5a4b] placeholder:text-[#d8c7b6] outline-none focus:border-[#c79a4b] focus:ring-4 focus:ring-[rgba(199,154,75,.18)]"
               required
               autoComplete={isSignup ? "new-password" : "current-password"}
             />
           </div>
 
-        {error && (
-          <div className="text-red-700 text-sm bg-red-50 border border-red-200 p-3 rounded-xl">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="text-red-700 text-sm bg-red-50 border border-red-200 p-3 rounded-xl">
+              {error}
+            </div>
+          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full h-11 rounded-xl bg-[#c79a4b] text-white font-semibold shadow-md hover:brightness-105 active:translate-y-px transition disabled:opacity-60"
-          >
-            {loading ? "Đang xử lý..." : isSignup ? "Đăng ký" : "Đăng nhập"}
-          </button>
+          <div className="flex justify-center pt-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className="group inline-flex items-center justify-center w-[132px] h-[58px] rounded-full bg-[#c79a4b] shadow-sm hover:brightness-105 active:translate-y-px transition disabled:opacity-60"
+              aria-label={isSignup ? "Đăng ký" : "Đăng nhập"}
+              title={isSignup ? "Đăng ký" : "Đăng nhập"}
+            >
+              <ArrowRight className="w-8 h-8 text-white transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </div>
         </form>
 
-        {/* Switch login/signup */}
-        <div className="mt-4 text-center">
+        {/* Liên kết dưới cùng */}
+        <div className="mt-5 text-center text-[16px]">
           <button
+            type="button"
+            className="text-[#1d76ff] font-medium hover:underline"
             onClick={() => setIsSignup((v) => !v)}
-            className="text-[#2b7fff] hover:underline text-sm"
           >
-            {isSignup ? "Đã có tài khoản? Đăng nhập" : "Chưa có tài khoản? Đăng ký"}
+            {isSignup ? "Đăng nhập." : "Đăng kí."}
           </button>
-        </div>
-
-        {/* Skip */}
-        <div className="mt-4">
           <button
+            type="button"
+            className="ml-2 text-[#9a8f83] underline-offset-2 hover:underline"
             onClick={handleSkip}
-            className="w-full h-11 rounded-xl border border-[#d9c7b5] bg-white text-[#6e645b] hover:bg-[#fff1e2] transition"
           >
-            Bỏ qua đăng nhập
+            Bỏ qua bước đăng nhập
           </button>
         </div>
       </div>
