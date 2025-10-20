@@ -1,173 +1,173 @@
 ﻿import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-type Gender = "male" | "female" | "other";
+import { ArrowLeft, ArrowRight, ChevronUp, ChevronDown } from "lucide-react";
 
 export default function OnboardingDOBPage() {
-  const [day, setDay] = useState("");
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
-  const [gender, setGender] = useState<Gender>("male");
+  const [day, setDay] = useState<number>(1);
+  const [month, setMonth] = useState<number>(1);
+  const [year, setYear] = useState<number>(1999);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const isValidDate = (d: string, m: string, y: string) => {
-    const dd = parseInt(d, 10);
-    const mm = parseInt(m, 10);
-    const yy = parseInt(y, 10);
-    if (!dd || !mm || !yy) return false;
-    if (yy < 1900 || yy > 2100) return false;
-    const dt = new Date(yy, mm - 1, dd);
-    return (
-      dt.getFullYear() === yy &&
-      dt.getMonth() === mm - 1 &&
-      dt.getDate() === dd
-    );
+  const isValidDate = (d: number, m: number, y: number) => {
+    const dt = new Date(y, m - 1, d);
+    return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+  };
+
+  const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+
+  const adjust = (type: "d" | "m" | "y", delta: number) => {
+    setError("");
+    if (type === "d") setDay((v) => clamp(v + delta, 1, 31));
+    if (type === "m") setMonth((v) => clamp(v + delta, 1, 12));
+    if (type === "y") setYear((v) => clamp(v + delta, 1900, new Date().getFullYear()));
   };
 
   const handleNext = () => {
     setError("");
-    if (!day || !month || !year) return;
-
     if (!isValidDate(day, month, year)) {
       setError("Ngày sinh không hợp lệ. Vui lòng kiểm tra lại.");
       return;
     }
-
-    const dob = `${year.padStart(4, "0")}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    const dob = `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")}`;
     sessionStorage.setItem("onboarding_dob", dob);
-    sessionStorage.setItem("onboarding_gender", gender);
     navigate("/onboarding/job");
   };
 
   const handleBack = () => navigate("/onboarding/name");
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f6e7d3] to-[#faefde] p-4">
-      <div className="w-full max-w-md rounded-2xl border border-[#e9dccb] bg-white/90 shadow-xl p-6">
-        {/* Progress */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-sm text-gray-500">Bước 2/4</span>
-            <div className="flex gap-2">
-              <div className="w-12 h-1 bg-[#c79a4b] rounded" />
-              <div className="w-12 h-1 bg-[#c79a4b] rounded" />
-              <div className="w-12 h-1 bg-gray-300 rounded" />
-              <div className="w-12 h-1 bg-gray-300 rounded" />
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Ngày sinh của bạn?
-          </h2>
-          <p className="text-gray-600">
-            Ngày sinh là yếu tố quan trọng nhất trong thần số học.
-          </p>
+    <div
+      className="min-h-screen w-full flex flex-col items-center justify-center p-4"
+      style={{
+        backgroundImage:
+          "radial-gradient(#f3d9a6 1px, transparent 1px), radial-gradient(#f3d9a6 1px, transparent 1px)",
+        backgroundPosition: "0 0, 12px 12px",
+        backgroundSize: "24px 24px",
+        backgroundColor: "#fff8ec",
+      }}
+    >
+      {/* Dots progress */}
+      <div className="mb-3 flex items-center gap-2">
+        <span className="w-4 h-4 rounded-full bg-[#c79a4b] ring-2 ring-[#f2e2c8]" />
+        <span className="w-3 h-3 rounded-full bg-[#c79a4b]" />
+        <span className="w-3 h-3 rounded-full bg-[#d6c0a1] opacity-70" />
+        <span className="w-3 h-3 rounded-full bg-[#d6c0a1] opacity-70" />
+        <span className="w-3 h-3 rounded-full bg-[#d6c0a1] opacity-70" />
+        <span className="w-3 h-3 rounded-full bg-[#d6c0a1] opacity-70" />
+      </div>
+
+      {/* Card */}
+      <div className="w-full max-w-md rounded-[18px] border border-[#c8b8a2] bg-[#fff4e6]/95 shadow-[0_10px_30px_rgba(60,40,20,.08)] p-6">
+        <h2 className="text-center text-[22px] font-extrabold tracking-wide text-[#c79a4b]">
+          Ngày tháng năm sinh
+        </h2>
+
+        <p className="mt-3 text-center text-[13px] text-[#9a744a] italic">
+          “Khoảnh khắc bạn được sinh ra, vũ trụ khẽ đặt một bản đồ nhỏ trong tim bạn.”
+        </p>
+
+        {/* Steppers */}
+        <div className="mt-5 flex items-end justify-center gap-3">
+          <Stepper
+            label="Ngày"
+            value={day}
+            display={String(day).padStart(2, "0")}
+            onUp={() => adjust("d", +1)}
+            onDown={() => adjust("d", -1)}
+          />
+          <Stepper
+            label="Tháng"
+            value={month}
+            display={String(month).padStart(2, "0")}
+            onUp={() => adjust("m", +1)}
+            onDown={() => adjust("m", -1)}
+          />
+          <Stepper
+            label="Năm"
+            value={year}
+            display={String(year).padStart(4, "0")}
+            onUp={() => adjust("y", +1)}
+            onDown={() => adjust("y", -1)}
+          />
         </div>
 
-        <div className="space-y-6">
-          {/* DOB */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Ngày sinh
-            </label>
-            <div className="grid grid-cols-3 gap-3">
-              <input
-                type="number"
-                value={day}
-                onChange={(e) => setDay(e.target.value.slice(0, 2))}
-                className="h-12 w-full rounded-xl border-2 border-[#e9c98a] bg-white px-4 text-[16px] placeholder:text-[#b9a38f] outline-none focus:border-[#c79a4b] focus:ring-4 focus:ring-[rgba(199,154,75,.18)]"
-                placeholder="Ngày"
-                min={1}
-                max={31}
-              />
-              <input
-                type="number"
-                value={month}
-                onChange={(e) => setMonth(e.target.value.slice(0, 2))}
-                className="h-12 w-full rounded-xl border-2 border-[#e9c98a] bg-white px-4 text-[16px] placeholder:text-[#b9a38f] outline-none focus:border-[#c79a4b] focus:ring-4 focus:ring-[rgba(199,154,75,.18)]"
-                placeholder="Tháng"
-                min={1}
-                max={12}
-              />
-              <input
-                type="number"
-                value={year}
-                onChange={(e) => setYear(e.target.value.slice(0, 4))}
-                className="h-12 w-full rounded-xl border-2 border-[#e9c98a] bg-white px-4 text-[16px] placeholder:text-[#b9a38f] outline-none focus:border-[#c79a4b] focus:ring-4 focus:ring-[rgba(199,154,75,.18)]"
-                placeholder="Năm"
-                min={1900}
-                max={2100}
-              />
-            </div>
-            {error && (
-              <div className="mt-2 text-red-700 text-sm bg-red-50 border border-red-200 p-3 rounded-xl">
-                {error}
-              </div>
-            )}
+        {error && (
+          <div className="mt-3 text-red-700 text-sm bg-red-50 border border-red-200 p-3 rounded-xl text-center">
+            {error}
           </div>
+        )}
 
-          {/* Gender */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Giới tính
-            </label>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setGender("male")}
-                className={`flex-1 h-12 rounded-xl border-2 transition-all ${
-                  gender === "male"
-                    ? "border-[#c79a4b] bg-[#fff1e2] text-[#6b4f2b]"
-                    : "border-gray-300 hover:border-gray-400"
-                }`}
-              >
-                Nam
-              </button>
-              <button
-                type="button"
-                onClick={() => setGender("female")}
-                className={`flex-1 h-12 rounded-xl border-2 transition-all ${
-                  gender === "female"
-                    ? "border-[#c79a4b] bg-[#fff1e2] text-[#6b4f2b]"
-                    : "border-gray-300 hover:border-gray-400"
-                }`}
-              >
-                Nữ
-              </button>
-              <button
-                type="button"
-                onClick={() => setGender("other")}
-                className={`flex-1 h-12 rounded-xl border-2 transition-all ${
-                  gender === "other"
-                    ? "border-[#c79a4b] bg-[#fff1e2] text-[#6b4f2b]"
-                    : "border-gray-300 hover:border-gray-400"
-                }`}
-              >
-                Khác
-              </button>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={handleBack}
-              className="flex-1 h-12 rounded-xl border border-[#d9c7b5] bg-white text-[#6e645b] hover:bg-[#fff1e2] transition"
-            >
-              Quay lại
-            </button>
-            <button
-              type="button"
-              onClick={handleNext}
-              disabled={!day || !month || !year}
-              className="flex-1 h-12 rounded-xl bg-[#c79a4b] text-white font-semibold shadow-md hover:brightness-105 active:translate-y-px transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Tiếp tục
-            </button>
-          </div>
+        {/* Actions */}
+        <div className="mt-6 flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="inline-flex items-center justify-center w-[88px] h-[46px] rounded-full bg-[#e8d6bd] text-[#6b5a4b] hover:brightness-105 active:translate-y-px transition"
+            aria-label="Quay lại"
+            title="Quay lại"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <button
+            type="button"
+            onClick={handleNext}
+            className="inline-flex items-center justify-center w-[88px] h-[46px] rounded-full bg-[#c79a4b] text-white hover:brightness-105 active:translate-y-px transition"
+            aria-label="Tiếp tục"
+            title="Tiếp tục"
+          >
+            <ArrowRight className="w-6 h-6" />
+          </button>
         </div>
       </div>
+
+      {/* Logo dưới */}
+      <div className="mt-4 text-[#5a4639] font-extrabold tracking-wide text-lg">Chạm.</div>
+    </div>
+  );
+}
+
+/** Ô stepper (giống mock: ô số lớn + mũi tên trên/dưới) */
+function Stepper({
+  label,
+  value, // không dùng trực tiếp, chỉ để nhận props
+  display,
+  onUp,
+  onDown,
+}: {
+  label: string;
+  value: number;
+  display: string;
+  onUp: () => void;
+  onDown: () => void;
+}) {
+  return (
+    <div className="flex flex-col items-center">
+      <button
+        type="button"
+        onClick={onUp}
+        className="mb-2 inline-flex items-center justify-center w-9 h-7 rounded-md text-[#c79a4b] hover:bg-[#fff1e2] border border-[#e3cba3]"
+        aria-label={`Tăng ${label.toLowerCase()}`}
+        title={`Tăng ${label.toLowerCase()}`}
+      >
+        <ChevronUp className="w-5 h-5" />
+      </button>
+
+      <div className="min-w-[92px] h-[54px] px-4 flex items-center justify-center rounded-[16px] border-2 border-[#d7a760] bg-white/95 text-[22px] font-extrabold text-[#6b5a4b]">
+        {display}
+      </div>
+
+      <button
+        type="button"
+        onClick={onDown}
+        className="mt-2 inline-flex items-center justify-center w-9 h-7 rounded-md text-[#c79a4b] hover:bg-[#fff1e2] border border-[#e3cba3]"
+        aria-label={`Giảm ${label.toLowerCase()}`}
+        title={`Giảm ${label.toLowerCase()}`}
+      >
+        <ChevronDown className="w-5 h-5" />
+      </button>
     </div>
   );
 }
